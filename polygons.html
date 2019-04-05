@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Polygons</title>
+	<script type="text/javascript" src="paper-full.js"></script>
+	<script type="text/paperscript" canvas="myCanvas">
+	var polygons = []
+	function getRandomPoint(){
+		var maxPoint = new Point(view.size.width, view.size.height);
+		var randomPoint = Point.random();
+		return maxPoint * randomPoint;	
+	}
+	function createNewPolygon(){
+		var point = getRandomPoint()
+		var sides = Math.ceil((Math.random() * 5) + 2.01);
+		var radius = Math.ceil(Math.random() * 150)
+		return new Path.RegularPolygon(new Point(point), sides, radius)
+	}
+	function getRandomColor(){
+		return 'rgb(' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ',' + Math.floor(Math.random() * 255) + ')';
+	}
+	function getVector(newPolygon){
+		var destination = getRandomPoint();
+		var speed = Math.random() / 80
+		return (destination - newPolygon.position) * speed;
+	}
+	function getRotation(){
+		return (Math.random() - 0.5) * 5
+	}
+	function getReduction(){
+		return 0.991 + (Math.random() / 100)
+	}
+	function getHue(){
+		return Math.random() * 5
+	}
+	function getProperties(newPolygon){
+		newPolygon.fillColor = getRandomColor();
+		newPolygon.vector = getVector(newPolygon);
+		newPolygon.spin = getRotation();
+		newPolygon.reduction = getReduction();
+		newPolygon.colorChange = getHue();
+	}
+	function onKeyDown(event) {
+		var newPolygon = createNewPolygon()
+		getProperties(newPolygon)
+		polygons.push(newPolygon);
+	}
+	function animate(polygon){
+		polygon.fillColor.hue += polygon.colorChange;
+		polygon.scale(polygon.reduction)
+		polygon.rotate(polygon.spin)
+		polygon.position += polygon.vector;
+		if(polygon.area < 1){
+			polygon.remove();
+		}
+	}
+	function onFrame(event){
+		polygons.forEach(animate)
+	}
+	</script>
+	<link rel="stylesheet" type="text/css" href="polygons.css">
+</head>
+<body>
+	<canvas id="myCanvas" resize></canvas>
+</body>
+</html>
